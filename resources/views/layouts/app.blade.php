@@ -18,7 +18,7 @@
     @php
         $viteManifestExists = file_exists(public_path('build/manifest.json'));
     @endphp
-    
+
     @if($viteManifestExists)
         @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @else
@@ -27,18 +27,20 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @endif
+
+    @turnstileScripts()
 </head>
 
 <body>
     <div style="z-index: 100; position: relative;"> <!-- Changed from fixed-top to relative -->
-        <div class="d-flex flex-row bg-light">
+        <div class="d-flex flex-row">
             <div class="p-2"> <img src="{{ asset('images/ucll_logo.png') }}" class="rounded" alt="logo ucll"></div>
             <div class="d-flex flex-column">
                 <div class="pt-3">
                     <h1 class="text-danger">TECHNOLOGIE</h1>
                 </div>
                 <div class="pb-1">
-                    <h3 class="text-success">internationalisering - studiereizen</h3>
+                    <h3 class="text-success">Internationalisering - Studiereizen</h3>
                 </div>
             </div>
         </div>
@@ -46,9 +48,19 @@
     <div> <!-- Removed margin-top to allow natural scrolling -->
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                <a class="navbar-brand" href="{{ route('home') }}">
+                    Home
                 </a>
+                <a class="navbar-brand" href="{{ url('/voorbeeldreis') }}">
+                    Voorbeeldreis
+                </a>
+                <a class="navbar-brand" href="{{ route('contact.form') }}">
+                    Contact
+                </a>
+                <a class="navbar-brand" href="{{ route('admin.panel') }}">
+                    Admin
+                </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -63,6 +75,8 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        <x-locale-switcher />
+
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
@@ -102,7 +116,21 @@
         </nav>
 
         <main class="py-4">
-            @yield('content')
+            <div class="container-fluid">
+                <div class="row overflow-y-auto" style="max-height: 60vh">
+                    @hasSection('sidebar')
+                        @yield('sidebar')
+                    @endif
+
+                    @if(View::hasSection('sidebar'))
+                        @yield('content')
+                    @else
+                        <div class="justify-content-center">
+                            @yield('content')
+                        </div>
+                    @endif
+                </div>
+            </div>
         </main>
     </div>
 </body>

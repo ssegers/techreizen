@@ -1,11 +1,24 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GuestRegistrationController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AdminPanelController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/contact', [ContactController::class, 'showContactForm'])->name('contact.form');
+Route::post('/contact', [ContactController::class, 'submitContactForm'])->name('contact.submit');
+Route::get('/contact/confirmation', [ContactController::class, 'showContactConfirmation'])->name('contact.confirmation');
+
+Route::get('/admin-panel', [AdminPanelController::class, 'showAdminPanel'])->name('admin.panel');
+
+Route::get('/switch-locale/{lang}', function ($lang) {
+    if (in_array($lang, ['nl', 'en'])) session(['locale' => $lang]);
+
+    return redirect()->back();
+})->name('locale.switch');
 
 //route for AJAX request
 Route::get('/majors/{educationId}', [GuestRegistrationController::class, 'getMajorsByEducation'])->name('majors.byEducation');
@@ -22,7 +35,7 @@ Route::middleware(['auth', 'user-access:guest'])->group(function () {
     Route::get('/disclaimerPage', [HomeController::class, 'disclaimerPage'])->name('guest.disclaimer');
     Route::post('/disclaimerPage', [HomeController::class, 'acceptDisclaimer'])->name('guest.disclaimer.accept');
 
-    // Guest Registration Routes 
+    // Guest Registration Routes
     Route::prefix('registration')->group(function () {
         // Step 1: Basic Info
         Route::get('/basic-info', [GuestRegistrationController::class, 'showBasicInfoForm'])
@@ -41,7 +54,7 @@ Route::middleware(['auth', 'user-access:guest'])->group(function () {
             ->name('guest.registration.contact-info');
         Route::post('/contact-info', [GuestRegistrationController::class, 'submitContactInfo'])
             ->name('guest.registration.contact-info.submit');
-            
+
         // Step 4: Confirmation page
         Route::get('/confirmation', [GuestRegistrationController::class, 'showConfirmationPage'])
             ->name('guest.registration.confirmation');
